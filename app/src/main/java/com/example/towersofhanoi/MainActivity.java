@@ -10,6 +10,10 @@ public class MainActivity extends AppCompatActivity
 {
     private TextView disk0TV, disk1TV, disk2TV;
     private ViewGroup tower0VG, tower1VG, tower2VG, placeholderVG;
+    private Disk disk0, disk1, disk2;
+    private Tower tower0, tower1, tower2;
+    private Disk placeholder = null;
+    private boolean shouldSelectSource = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -26,31 +30,77 @@ public class MainActivity extends AppCompatActivity
         this.tower1VG = this.findViewById(R.id.tower1VG);
         this.tower2VG = this.findViewById(R.id.tower2VG);
 
-        Stack s = new Stack();
-        s.push(2);
-        s.push(3);
-        s.push(7);
-        s.push(5);
-        s.display();
-        s.pop();
-        s.pop();
-        s.pop();
-        s.display();
-        System.out.println("*** " + s.peek());
+        this.disk0 = new Disk(2);
+        this.disk1 = new Disk(4);
+        this.disk2 = new Disk(8);
 
+        this.tower0 = new Tower();
+        this.tower1 = new Tower();
+        this.tower2 = new Tower();
+
+        this.tower0.push(this.disk2);
+        this.tower0.push(this.disk1);
+        this.tower0.push(this.disk0);
+        this.tower0.display();
+    }
+
+    private void selectSource(Tower tower, ViewGroup towerVG)
+    {
+        if(tower.peek() != null)
+        {
+            this.placeholder = tower.pop();
+            TextView temp = (TextView)towerVG.getChildAt(0);
+            towerVG.removeViewAt(0);
+            this.placeholderVG.addView(temp);
+            this.shouldSelectSource = false;
+        }
+    }
+
+    private void selectDestination(Tower tower, ViewGroup towerVG)
+    {
+        if(tower.push(this.placeholder))
+        {
+            this.placeholder = null;
+            TextView temp = (TextView)this.placeholderVG.getChildAt(0);
+            this.placeholderVG.removeViewAt(0);
+            towerVG.addView(temp, 0);
+            this.shouldSelectSource = true;
+        }
     }
 
     public void tower0ButtonPressed(View v)
     {
-        View temp = this.tower0VG.getChildAt(0);
-        this.tower0VG.removeViewAt(0);
-        this.placeholderVG.addView(temp);
+        if(this.shouldSelectSource)
+        {
+            this.selectSource(this.tower0, this.tower0VG);
+        }
+        else
+        {
+            this.selectDestination(this.tower0, this.tower0VG);
+        }
     }
 
     public void tower1ButtonPressed(View v)
     {
-        View temp = this.placeholderVG.getChildAt(0);
-        this.placeholderVG.removeViewAt(0);
-        this.tower1VG.addView(temp, 0);
+        if(this.shouldSelectSource)
+        {
+            this.selectSource(this.tower1, this.tower1VG);
+        }
+        else
+        {
+            this.selectDestination(this.tower1, this.tower1VG);
+        }
+    }
+
+    public void tower2ButtonPressed(View v)
+    {
+        if(this.shouldSelectSource)
+        {
+            this.selectSource(this.tower2, this.tower2VG);
+        }
+        else
+        {
+            this.selectDestination(this.tower2, this.tower2VG);
+        }
     }
 }
